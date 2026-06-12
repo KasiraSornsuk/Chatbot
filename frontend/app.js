@@ -118,12 +118,12 @@ chatForm.addEventListener('submit', async function(e) {
     const loadingMessage = appendLoadingMessage();
 
     try {
-        const response = await fetch('http://localhost:3000/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: messageText })
+        const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: messageText })
         });
-
+       
         if (!response.ok) throw new Error('Backend error');
 
         const data = await response.json();
@@ -180,7 +180,7 @@ function appendLoadingMessage() {
     loadingWrapper.className = 'flex gap-4 max-w-3xl animate-fade-in';
     loadingWrapper.innerHTML = `
         <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center flex-shrink-0 shadow-md">
-            <i class="fa-solid fa-wand-magic-sparkles text-white text-xs"></i>
+            <i class="fa-solid fa-robot text-white text-xs"></i>
         </div>
         <div class="space-y-2 max-w-xl">
             <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Nexus AI</p>
@@ -193,6 +193,7 @@ function appendLoadingMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
     return loadingWrapper;
 }
+
 
 // โหลดข้อมูลเมื่อเปิดหน้าเว็บครั้งแรก
 renderSidebar();
