@@ -1,0 +1,59 @@
+/* ตกแต่งองค์ประกอบพื้นฐานและฟอนต์หลัก */
+body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Thai', sans-serif;
+    background-color: #0B0F19;
+}
+
+/* ซ่อน Scrollbar สำหรับความเรียบหรู แต่ยังคงเลื่อนหน้าจอได้ */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* เอฟเฟกต์เรืองแสงนุ่มๆ สไตล์ Modern UI */
+.glow-effect {
+    box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.15);
+}
+
+/* แอนิเมชันตอนข้อความปรากฏ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+ /* จัดสไตล์ให้กับรายการและตัวหนังสือภายในคำตอบของ AI ให้เป็นระเบียบ */
+.html-content p {
+    margin-bottom: 0.75rem;
+}
+.html-content p:last-child {
+    margin-bottom: 0;
+}
+.html-content strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+.html-content ul, .html-content ol {
+    margin-left: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+.html-content ul {
+    list-style-type: disc;
+}
+.html-content ol {
+    list-style-type: decimal;
+}
+.html-content li {
+    margin-bottom: 0.25rem;
+}
