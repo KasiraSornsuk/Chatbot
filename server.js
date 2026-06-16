@@ -20,24 +20,23 @@ app.post('/api/chat', async (req, res) => {
             return res.status(500).json({ error: 'Missing Gemini API Key on Render setting' });
         }
 
-        // เรียกใช้คำสั่งคุยกับโมเดลเวอร์ชันล่าสุด
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: contents,
             config: {
-                systemInstruction: systemInstruction ? systemInstruction.parts[0].text : undefined
+                // ✅ ใส่ค่าข้อความที่ส่งมาจากหน้าบ้านลงไปตรงๆ ได้เลย
+                systemInstruction: systemInstruction 
             }
         });
 
-        // ส่งโครงสร้างข้อมูลกลับไปในรูปแบบก้อนข้อมูลของ Gemini เพื่อให้ app.js ถอดรหัสอ่านได้เหมือนเดิม
-        res.json(response);
+        // ✅ ส่งกลับไปเป็นก้อนวัตถุที่มีคีย์ชื่อ text เสมอ หน้าบ้านจะได้แกะด้วย data.text ได้แม่นยำ
+        res.json({ text: response.text });
 
     } catch (error) {
         console.error('Backend Error:', error.message);
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
-
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
