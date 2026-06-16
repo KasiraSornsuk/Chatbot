@@ -12,24 +12,27 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // สร้าง API Endpoint สำหรับรับข้อความแชต
+// สร้าง API Endpoint สำหรับรับข้อความแชต
 app.post('/api/chat', async (req, res) => {
     try {
-        const { contents } = req.body; // รับประวัติการคุยส่งมาจาก Frontend
+        // ✅ แก้ไข: ดึงทั้ง contents และ systemInstruction ที่ส่งมาจากหน้าบ้านมารอไว้
+        const { contents, systemInstruction } = req.body; 
         const apiKey = process.env.GEMINI_API_KEY;
 
-        // ถ้ายิงมาแล้วไม่มี Key ในระบบหลังบ้านให้แจ้งเตือนกลับไป
         if (!apiKey) {
             return res.status(500).json({ error: 'Missing Gemini API Key on server setup' });
         }
 
-        
         const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         // ทำหน้าที่เป็น Proxy ยิงแทนหน้าบ้าน
         const response = await fetch(geminiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: contents })
+            body: JSON.stringify({ 
+                contents: contents,
+                systemInstruction: systemInstruction // ✅ แก้ไข: ส่งระบบสั่งการตามไปด้วยเพื่อความเรียบร้อย
+            })
         });
 
         if (!response.ok) {
@@ -37,8 +40,6 @@ app.post('/api/chat', async (req, res) => {
         }
 
         const data = await response.json();
-        
-        // ส่งข้อมูลที่ได้จาก Gemini กลับไปให้ Frontend (หน้าบ้าน)
         res.json(data);
 
     } catch (error) {
@@ -47,7 +48,7 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// เปิด Server ให้รอรับ Request
+// ✅ อย่าลืมสั่งเปิดพอร์ตที่บรรทัดสุดท้ายของไฟล์ด้วยนะครับ (ถ้าในไฟล์จริงมีอยู่แล้วข้ามได้เลย)
 app.listen(PORT, () => {
-    console.log(`🚀 Robot AI Backend is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
