@@ -23,14 +23,31 @@ app.post('/api/chat', async (req, res) => {
             return res.status(500).json({ error: 'Missing Gemini API Key on Render setting' });
         }
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: contents,
-            config: {
-                // ✅ ใส่ค่าข้อความที่ส่งมาจากหน้าบ้านลงไปตรงๆ ได้เลย
-                systemInstruction: systemInstruction 
+        // ✅ ฟังก์ชันลองเรียกใหม่อัตโนมัติ ถ้า Gemini ตอบ 503 (model overload ชั่วคราว)
+        async function callGeminiWithRetry(retries = 3, delayMs = 1500) {
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                try {
+                    return await ai.models.generateContent({
+                        model: 'gemini-2.5-flash',
+                        contents: contents,
+                        config: {
+                            // ✅ ใส่ค่าข้อความที่ส่งมาจากหน้าบ้านลงไปตรงๆ ได้เลย
+                            systemInstruction: systemInstruction
+                        }
+                    });
+                } catch (err) {
+                    const isOverloaded = err.message && (err.message.includes('503') || err.message.includes('UNAVAILABLE'));
+                    if (isOverloaded && attempt < retries) {
+                        console.warn(`Gemini รุ่นนี้ไม่พร้อมใช้งานชั่วคราว กำลังลองใหม่ครั้งที่ ${attempt + 1}...`);
+                        await new Promise(r => setTimeout(r, delayMs * attempt)); // เพิ่มเวลารอขึ้นทีละรอบ
+                        continue;
+                    }
+                    throw err;
+                }
             }
-        });
+        }
+
+        const response = await callGeminiWithRetry();
 
         // ✅ ส่งกลับไปเป็นก้อนวัตถุที่มีคีย์ชื่อ text เสมอ หน้าบ้านจะได้แกะด้วย data.text ได้แม่นยำ
         res.json({ text: response.text });
