@@ -10,6 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 // เรียกใช้งาน API Key จากหน้าเว็บ Render
+console.log('DEBUG - มี GEMINI_API_KEY ไหม:', !!process.env.GEMINI_API_KEY);
+console.log('DEBUG - ความยาวของ Key:', process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.length : 0);
+
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 app.post('/api/chat', async (req, res) => {
